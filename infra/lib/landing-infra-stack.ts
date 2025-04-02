@@ -18,6 +18,21 @@ export class LandingInfraStack extends cdk.Stack {
         });
         const { webBucket, cloudfrontDistribution } = this.createWebSite(hostedZone, 'jigxo.com');
 
+        const webRedirectBucket = new s3.Bucket(this, 'WebRedirectBucket', {
+            bucketName: 'www.jigxo.com',
+            autoDeleteObjects: true,
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            websiteRedirect: {
+                hostName: 'jigxo.com',
+                protocol: s3.RedirectProtocol.HTTPS,
+            },
+        });
+        new route53.ARecord(this, 'WebRedirectDnsRecord', {
+            zone: hostedZone,
+            recordName: 'www.jigxo.com',
+            target: route53.RecordTarget.fromAlias(new route53_targets.BucketWebsiteTarget(webRedirectBucket))
+        });
+
         new cdk.CfnOutput(this, 'WebSiteBucketName', {
             value: webBucket.bucketName,
             description: 'Bucket to deploy web site',
