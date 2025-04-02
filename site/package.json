@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "next build && aws s3 sync out/ s3://jigxo.com && aws cloudfront create-invalidation --distribution-id EZ1FLBK9WI6X --paths \"/*\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
